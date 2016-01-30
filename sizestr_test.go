@@ -129,14 +129,14 @@ func TestParse6(t *testing.T) {
 }
 
 func TestFlags1(t *testing.T) {
-	var b Bytes
+	b := Flag("25kb")
 	f := flag.NewFlagSet("test", flag.ContinueOnError)
-	f.Var(&b, "size", "give me a size")
+	f.Var(b, "size", "give me a size")
 	err := f.Parse([]string{"-size", "123kb"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if int64(b) != 123*1000 {
+	if b.Value() != 123*1000 {
 		t.Error(b)
 	}
 }

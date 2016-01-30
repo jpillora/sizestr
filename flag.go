@@ -1,11 +1,9 @@
 package sizestr
 
-import "flag"
-
 //Flag implements the flags.Value interface
 type Bytes int64
 
-func Flag(s string) flag.Value {
+func Flag(s string) *Bytes {
 	var b Bytes
 	if err := b.Set(s); err != nil {
 		panic(err)
@@ -24,4 +22,8 @@ func (b *Bytes) Set(s string) error {
 	}
 	*b = Bytes(bytes)
 	return nil
+}
+
+func (b Bytes) Value() int64 {
+	return int64(b)
 }

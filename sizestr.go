@@ -12,7 +12,7 @@ import (
 var scaleStrings = []string{"B", "KB", "MB", "GB", "TB", "PB", "XB"}
 var parseRegexp = regexp.MustCompile(
 	//     byte value[1]  scales[4]    1024[5]? B
-	`(?i)\b(\d+(\.(\d+))?)(k|m|g|t|p|x)?(i?)b\b`,
+	`(?i)\b(\d+(\.(\d+))?)(k|m|g|t|p|x)?(i?)(b?)\b`,
 )
 var lowerCase = false
 
@@ -48,6 +48,10 @@ func Parse(s string) (int64, error) {
 
 //ParseScale a string into a byte count with a specific scale (defaults to 1000)
 func ParseBytesPerKB(s string, bytesPerKB int64) (int64, error) {
+	//0 doesn't need a scale
+	if s == "0" {
+		return 0, nil
+	}
 	m := parseRegexp.FindStringSubmatch(s)
 	if len(m) == 0 {
 		return 0, errors.New("parse failed")
@@ -66,12 +70,14 @@ func ParseBytesPerKB(s string, bytesPerKB int64) (int64, error) {
 			bytesPer = float64(defaultBytesPerKB)
 		}
 	}
-	scale := strings.ToUpper(m[4] + "b")
-	for _, s := range scaleStrings {
-		if scale == s {
-			break
+	if strings.ToLower(m[6]) == "b" {
+		scale := strings.ToUpper(m[4] + "b")
+		for _, s := range scaleStrings {
+			if scale == s {
+				break
+			}
+			v *= bytesPer
 		}
-		v *= bytesPer
 	}
 	i := int64(v)
 	if i < 0 {
