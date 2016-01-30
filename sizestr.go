@@ -42,6 +42,15 @@ func ToString(n int64) string {
 }
 
 //ParseScale a string into a byte count with a specific scale
+func MustParse(s string) int64 {
+	i, err := ParseBytesPerKB(s, 0 /*autodetect*/)
+	if err != nil {
+		panic(err)
+	}
+	return i
+}
+
+//ParseScale a string into a byte count with a specific scale
 func Parse(s string) (int64, error) {
 	return ParseBytesPerKB(s, 0 /*autodetect*/)
 }
